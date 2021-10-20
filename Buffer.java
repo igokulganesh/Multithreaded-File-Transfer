@@ -1,25 +1,38 @@
 public class Buffer
 {
-	static int BUFFER_SIZE = 12; // 1024 * 1024 * 16
-	static long AUTO_INC = 0 ; 
-	String fileName;
-	long offset;
-	long size;
-	long seqNo;
-	Byte buffer[];
-	int type; // 1 - data, 2 - new file open, 3 - close the file 
+	public enum MsgType { INVALID, DATA, FILEOPEN, FILECLOSE, END };   
+
+	static int BUFFER_SIZE = 12; // 1024 * 1024 * 16 ; 
+	int fileIndex;
+	int offset ;
+	int size ;
+	int seqNo ;
+	byte buffer[] ;
+	MsgType type; // 1 - data, 2 - new file open, 3 - close the file 
 
 	public Buffer()
 	{
-		seqNo = AUTO_INC++ ;
-		buffer = new Byte[BUFFER_SIZE];
+		seqNo = 0 ; 
+		buffer = new byte[BUFFER_SIZE] ;
 	}
 
-	public Buffer(String fname, long off, long sz) 
+	public void init(int off, int sz, int sno, int ind) 
 	{
-		fileName = fname;
 		offset = off;
 		size = sz;
-		seqNo = AUTO_INC++ ;
+		seqNo = sno ;
+		type = MsgType.DATA ; 
+		fileIndex = ind;
+	}
+
+	public void init(String data, MsgType msg, int sno, int ind)
+	{
+		type = msg ; 
+		seqNo = sno ;
+		fileIndex = ind;
+		if(type == MsgType.FILEOPEN)
+		{
+			System.arraycopy(data.getBytes(), 0, buffer, 0, data.length()); 
+		}
 	}
 }

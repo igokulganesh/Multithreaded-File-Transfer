@@ -20,19 +20,22 @@ public class BufferQueue
 	static int MAX_BUFFERS = 20; // 1024 * 1024 * 16
 	PriorityQueue<Buffer> pq ;
 	long prev ;
+	boolean isSerialize ;
+
  
 	private final Lock aLock = new ReentrantLock(); 
 	private final Condition bufferEmpty = aLock.newCondition();
 
-	BufferQueue(int capacity)
+	BufferQueue(int capacity, boolean flag)
 	{ 
 		this.pq = new PriorityQueue<Buffer>(capacity, new BufferComparator()); 
 		this.prev = 0 ;
+		this.isSerialize = flag ; 
 	}
 
 	BufferQueue()
 	{
-		this(100);	
+		this(100, true); 
 	}
 
 	void push(Buffer val) 
@@ -52,13 +55,20 @@ public class BufferQueue
 	Buffer pop() 
 	{
 		aLock.lock(); 
-		try 
-		{ 
-			while(pq.isEmpty() || prev != pq.peek().seqNo-1)
+		try
+		{
+			if(!isSerialize)
+			{
+				while(pq.isEmpty())
+					bufferEmpty.await(); 
+				return pq.poll(); 
+			}
+			
+			while(pq.isEmpty() || prev != pq.peek().seqNo)
 				bufferEmpty.await(); 
 
 			Buffer top = pq.poll() ;
-			prev = top.seqNo ; 
+			prev++ ; 
 			return top ;  
 		} 
 		catch(InterruptedException e)
