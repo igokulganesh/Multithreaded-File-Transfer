@@ -19,7 +19,7 @@ public class BufferQueue
 {
 	static int MAX_BUFFERS = 20; // 1024 * 1024 * 16
 	PriorityQueue<Buffer> pq ;
-	int prev ;
+	long prev ;
  
 	private final Lock aLock = new ReentrantLock(); 
 	private final Condition bufferEmpty = aLock.newCondition();
@@ -64,7 +64,7 @@ public class BufferQueue
 		catch(InterruptedException e)
 		{
 			System.out.println("UnknownError");
-			return new Buffer(-1) ;
+			return new Buffer() ;
 		}
 		finally 
 		{ 
