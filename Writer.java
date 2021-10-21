@@ -25,11 +25,21 @@ class Writer extends Thread
 					fileIndex = buf.fileIndex;
 					if (file != null)
 						file.close();					
-					file = writeManager.createFileObj(fileIndex);
+					file = writeManager.CreateIO(fileIndex);
 				}
 				
 				if (buf.type == Buffer.MsgType.DATA)
 					file.write(buf);
+				
+				if (buf.type == Buffer.MsgType.END)
+				{
+					file.write(buf);
+					if (writeManager.mode.equals("SOCKET"))
+					{
+					//	file.read(buf);
+					}
+					break ;
+				}
 				
 				writeManager.putBuffer(buf);
 				buf = writeManager.getNextBuffer();

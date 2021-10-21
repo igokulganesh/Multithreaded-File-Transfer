@@ -1,29 +1,38 @@
 import java.io.*;
 import java.util.*; 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.*;
 
 public class WriteManager
 {
-	ArrayList<Writer> writers ; 
-	String[] fileNames = new String[10] ;
+	private final Lock rmlock = new ReentrantLock(); 
+	private final int READ_SIZE = 10 ;
+
+	ArrayList<Writer> writers = new ArrayList<Writer>(); // Thread 
+	ArrayList<String> fileNames  = new ArrayList<String>(); // filenames 
+
 	BufferQueue input;
 	BufferQueue output;
 
-	final int READ_SIZE = 10 ; 
 	int currentIndex;
 	long offset;
 	long seqNo;
 	long size;
 	int threadCount; 
 	int transferCompleted;
-	private final Lock rmlock = new ReentrantLock(); 
 
-	WriteManager(String fname, int thc, BufferQueue inp, BufferQueue out)
+	String serverName = null; 
+	int port ;
+	String mode = null ;
+
+	WriteManager(String mode, String ip, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
 	{
+
+		this.mode = mode ; 
+		this.serverName = ip ; 
+		this.port = Integer.parseInt(port);
+
 		currentIndex = 0 ;
-		fileNames[currentIndex] = (fname); 
+		fileNames.add(fname); 
 		offset = -1 ; 
 		size = READ_SIZE ; 
 		seqNo = 0;
@@ -47,20 +56,35 @@ public class WriteManager
 		if(buf.type == Buffer.MsgType.END)
 		{
 			transferCompleted = 0;
-			output.push(buf);
-			buf = null;
+			//output.push(buf);
+			//buf = null;
 		}
 		rmlock.unlock();
 
 		return buf;
 	}	
 
-	IO createFileObj(int index) throws IOException
+	IO CreateIO(int index) throws IOException
 	{
-		IO file = new FileIO();
-		file.open(fileNames[index], "rw");
+		IO file = null ; 
+
+		if(mode.equals("FILE"))
+		{	
+			file = new FileIO();
+			file.open(fileNames.get(currentIndex), "rw");
+		}
+		else if(mode.equals("SOCKET"))
+		{
+			file = new SocketIO(port); 
+			file.open(serverName, "SENDER");
+		}
+		else
+		{
+			System.out.println("Invalid Input");
+			System.exit(0);
+		}
 		return file;
-	}
+	}	
 
 	void putBuffer(Buffer buf)
 	{ 
@@ -69,10 +93,10 @@ public class WriteManager
 
 	void start()
 	{
-		writers = new ArrayList<Writer>(); 
+		Writer w ; 
 		for(int i = 0 ; i < threadCount ; i++)
 		{
-			Writer w = new Writer(this); 
+			w = new Writer(this); 
 			writers.add(w);
 			w.start();
 		}

@@ -1,30 +1,36 @@
 import java.io.*;
 import java.util.*; 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.*;
 
 public class ReadManager
 {
-	ArrayList<Reader> readers ; 
-	String[] fileNames = new String[10] ;
+	private final Lock rmlock = new ReentrantLock(); 
+	private final int READ_SIZE = 10 ;
+
+	ArrayList<Reader> readers = new ArrayList<Reader>();  ; // Thread 
+	ArrayList<String> fileNames = new ArrayList<String>(); // filenames 
+
 	BufferQueue input;
 	BufferQueue output;
 
-	final int READ_SIZE = 10 ; 
 	int currentIndex;
 	int offset;
 	int seqNo;
 	int size;
-	int threadCount; 
-	int remainingBytes ;
-	
-	private final Lock rmlock = new ReentrantLock(); 
+	int threadCount;
+	int remainingBytes;
 
-	ReadManager(String fname, int thc, BufferQueue inp, BufferQueue out)
+	int port ;
+	String mode ;
+
+	ReadManager(String mode, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
 	{
+
+		this.mode = mode ; 
+		this.port = Integer.parseInt(port);   
+
 		currentIndex = 0 ;
-		fileNames[currentIndex] = (fname); 
+		fileNames.add(fname); 
 		offset = 0 ; 
 		size = READ_SIZE ; 
 		seqNo = 0;
@@ -39,18 +45,24 @@ public class ReadManager
 		rmlock.lock();
 		Buffer buf = input.pop();
 
+		if (mode == "SOCKET")
+		{
+			rmlock.unlock();
+			return buf;
+		}
 		if(offset == 0)
 		{
 			//currentIndex++;
 			try
 			{
-				File file = new File(fileNames[currentIndex]);
+				File file = new File(fileNames.get(currentIndex));
+				size = 10;
 				remainingBytes = (int)file.length();		
 			}
 			catch(Exception e)
 			{
 				currentIndex-- ;   
-				buf.init(fileNames[currentIndex], Buffer.MsgType.END, seqNo++, currentIndex);
+				buf.init(fileNames.get(currentIndex), Buffer.MsgType.END, seqNo++, currentIndex);
 				offset = 0 ;
 				rmlock.unlock();
 				return buf ; 
@@ -88,25 +100,39 @@ public class ReadManager
 		return buf ;
 	}	
 
-	IO createFileObj(int index) throws IOException
+	IO CreateIO(int index) throws IOException
 	{
-		IO file = new FileIO();
-		file.open(fileNames[index], "r");
+		IO file = null ; 
+
+		if(mode.equals("FILE"))
+		{	
+			file = new FileIO();
+			file.open(fileNames.get(currentIndex), "r");
+		}
+		else if(mode.equals("SOCKET"))
+		{
+			file = new SocketIO(port); 
+			file.open(null, "RECIEVER"); 
+		}
+		else
+		{
+			System.out.println("Invalid Input");
+			System.exit(0);
+		}
 		return file;
-	}
-	
+	}	
+
 	void putBuffer(Buffer buf)
 	{ 
 		output.push(buf);
 	}
 
 	void start()
-	{
-		readers = new ArrayList<Reader>(); 
-		
+	{	
+		Reader r ; 
 		for(int i = 0 ; i < threadCount ; i++)
 		{
-			Reader r = new Reader(this); 
+			r = new Reader(this); 
 			readers.add(r); 
 			r.start();
 		}
