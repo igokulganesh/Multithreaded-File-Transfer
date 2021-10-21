@@ -29,7 +29,7 @@ public class ReadManager
 		this.mode = mode ; 
 		this.port = Integer.parseInt(port);   
 
-		currentIndex = 0 ;
+		currentIndex = -1 ;
 		fileNames.add(fname); 
 		offset = 0 ; 
 		size = READ_SIZE ; 
@@ -51,38 +51,21 @@ public class ReadManager
 			return buf;
 		}
 		if(offset == 0)
-		{
-			//currentIndex++;
-			try
+		{	
+			currentIndex++ ; 
+			if(currentIndex >= fileNames.size()) // All files Completed 
+			{
+				buf.init("", Buffer.MsgType.END, seqNo++, currentIndex);
+				rmlock.unlock();
+				return buf ; 
+			}
+			else // next files 
 			{
 				File file = new File(fileNames.get(currentIndex));
 				size = READ_SIZE;
 				remainingBytes = (int)file.length();		
 			}
-			catch(Exception e)
-			{
-		
-				buf.init(fileNames.get(currentIndex), Buffer.MsgType.END, seqNo++, currentIndex);
-				offset = 0 ;
-				rmlock.unlock();
-				return buf ; 
-			}	
-
-		//	buf.init(fileNames[currentIndex], Buffer.MsgType.FILEOPEN, seqNo++);
-		//	offset = 0 ;  
-		//	rmlock.unlock();
-		//	return buf ; 
 		}
-		/*
-		if(remainingBytes == 0)
-		{
-			buf.init(fileNames[currentIndex], Buffer.MsgType.FILECLOSE, seqNo++, currentIndex);
-			offset = -1 ;
-			currentIndex++ ;   
-			rmlock.unlock();
-			return buf ; 
-		} 
-		*/
 
 		if (size > remainingBytes)
 			size = remainingBytes ;
@@ -91,11 +74,10 @@ public class ReadManager
 		offset += size;
 		seqNo++;
 		remainingBytes -= size ;
+		
 		if (remainingBytes == 0)
-		{
-			currentIndex++;
 			offset = 0;
-		}
+		
 		System.out.println("Remaining : " + remainingBytes);
 		rmlock.unlock();
 		return buf ;
@@ -105,10 +87,13 @@ public class ReadManager
 	{
 		IO file = null ; 
 
+		if(index >= fileNames.size())
+			return file;
+		
 		if(mode.equals("FILE"))
 		{	
 			file = new FileIO();
-			file.open(fileNames.get(currentIndex), "r");
+			file.open(fileNames.get(index), "r");
 		}
 		else if(mode.equals("SOCKET"))
 		{

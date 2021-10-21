@@ -23,9 +23,16 @@ class Writer extends Thread
 				if(buf.fileIndex != fileIndex)
 				{
 					fileIndex = buf.fileIndex;
-					if (file != null)
-						file.close();					
-					file = writeManager.CreateIO(fileIndex);
+					if (!writeManager.mode.equals("SOCKET"))
+					{
+						if (file != null)
+							file.close();					
+						file = writeManager.CreateIO(fileIndex);
+					}
+					else if (file == null)
+					{
+						file = writeManager.CreateIO(fileIndex);
+					}
 				}
 				
 				if (buf.type == Buffer.MsgType.DATA)
@@ -33,10 +40,12 @@ class Writer extends Thread
 				
 				if (buf.type == Buffer.MsgType.END)
 				{
-					file.write(buf);
+					
 					if (writeManager.mode.equals("SOCKET"))
 					{
-					//	file.read(buf);
+						// file.flush();
+						file.write(buf);
+						file.close();
 					}
 					break ;
 				}

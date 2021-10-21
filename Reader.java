@@ -22,9 +22,16 @@ public class Reader extends Thread
 				if(buf.fileIndex != fileIndex)
 				{
 					fileIndex = buf.fileIndex;
-					if (file != null)
-						file.close();
-					file = readManger.CreateIO(fileIndex);
+					if (readManger.mode.equals("SOCKET"))
+					{
+						if (file != null)
+							file.close();
+						file = readManger.CreateIO(fileIndex);
+					}
+					else if (file == null)
+					{
+						file = readManger.CreateIO(fileIndex);
+					}
 				}
 				/*
 				if(buf.type == Buffer.MsgType.FILECLOSE)
@@ -39,7 +46,7 @@ public class Reader extends Thread
 				}
 				else
 				{
-					if(buf.type == Buffer.MsgType.DATA)
+					if(file != null && buf.type == Buffer.MsgType.DATA)
 					{
 						file.read(buf);
 					}	
@@ -53,6 +60,8 @@ public class Reader extends Thread
 					{
 						// Send the Last Acknowledgement to Sender
 						// file.write(buf);
+						//file.flush();
+						file.close();
 					}
 				
 					break ; 

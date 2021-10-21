@@ -16,7 +16,7 @@ public class Buffer implements java.io.Serializable
 	protected void finalize() throws Throwable  
 	{
 		this.buffer = null ; 
-		System.out.print("GC : " + this.seqNo);
+	//	System.out.println("GC : " + this.seqNo);
 	}
 		
 	public Buffer()

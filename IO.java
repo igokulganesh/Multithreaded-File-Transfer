@@ -165,6 +165,7 @@ class SocketIO extends IO
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
 
 		//System.out.println("Read From the stream");

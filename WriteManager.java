@@ -67,6 +67,9 @@ public class WriteManager
 	{
 		IO file = null ; 
 
+		if(index >= fileNames.size())
+			return file;
+				
 		if(mode.equals("FILE"))
 		{	
 			file = new FileIO();

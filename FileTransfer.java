@@ -4,7 +4,7 @@ public class FileTransfer
 	// Sender = -S IP PORT SourceFile
 
 	static final int MAX_BUFFERS = 10 ; 
-	static final int BUFFER_SIZE = 1024 * 16 ; 
+	static final int BUFFER_SIZE = 1024 * 16; 
 	static int THREAD_COUNT = 5 ;  
 
 	public static void main(String[] args)
