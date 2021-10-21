@@ -4,15 +4,21 @@ public class Buffer implements java.io.Serializable
 
 	public enum MsgType { INVALID, DATA, FILEOPEN, FILECLOSE, END };   
 
-	static int BUFFER_SIZE = 12; // 1024 * 1024 * 16 ; 
+	static int BUFFER_SIZE = 1024 * 16 ; 
 	
 	int fileIndex;
 	int offset ;
 	int size ;
 	int seqNo ;
 	MsgType type; // 1 - data, 2 - new file open, 3 - close the file 
-	byte buffer[] ;
-
+	byte buffer[] ;	
+	
+	protected void finalize() throws Throwable  
+	{
+		this.buffer = null ; 
+		System.out.print("GC : " + this.seqNo);
+	}
+		
 	public Buffer()
 	{
 		seqNo = 0 ; 

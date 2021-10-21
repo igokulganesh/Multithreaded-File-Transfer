@@ -5,7 +5,7 @@ import java.util.concurrent.locks.*;
 public class ReadManager
 {
 	private final Lock rmlock = new ReentrantLock(); 
-	private final int READ_SIZE = 10 ;
+	private final int READ_SIZE = FileTransfer.BUFFER_SIZE ;
 
 	ArrayList<Reader> readers = new ArrayList<Reader>();  ; // Thread 
 	ArrayList<String> fileNames = new ArrayList<String>(); // filenames 
@@ -56,12 +56,12 @@ public class ReadManager
 			try
 			{
 				File file = new File(fileNames.get(currentIndex));
-				size = 10;
+				size = READ_SIZE;
 				remainingBytes = (int)file.length();		
 			}
 			catch(Exception e)
 			{
-				currentIndex-- ;   
+		
 				buf.init(fileNames.get(currentIndex), Buffer.MsgType.END, seqNo++, currentIndex);
 				offset = 0 ;
 				rmlock.unlock();
@@ -96,6 +96,7 @@ public class ReadManager
 			currentIndex++;
 			offset = 0;
 		}
+		System.out.println("Remaining : " + remainingBytes);
 		rmlock.unlock();
 		return buf ;
 	}	

@@ -156,7 +156,7 @@ class SocketIO extends IO
 			else
 				buf.init("", data.type, data.seqNo, data.fileIndex);
 			System.arraycopy(data.buffer, 0, buf.buffer, 0, data.buffer.length);
-			System.out.println("Read the Seq from stream " + data.seqNo + " " + data.offset + " " +data.size); 
+			//System.out.println("Read the Seq from stream " + data.seqNo + " " + data.offset + " " +data.size); 
 		//	out.write(data.seqNo);
 		//	out.flush();
 		} 
@@ -167,7 +167,7 @@ class SocketIO extends IO
 			e.printStackTrace();
 		}
 
-		System.out.println("Read From the stream");
+		//System.out.println("Read From the stream");
 		return buf.size ; // dataInput.read(buf.buffer, 0, buf.size); 
 	}
 
@@ -177,7 +177,7 @@ class SocketIO extends IO
 		out.writeObject(buf);
 		out.flush();
 		//int ack = in.readInt();
-		System.out.println("Write into the stream - " + buf.seqNo + " " + buf.offset + " " + buf.size);
+		//System.out.println("Write into the stream - " + buf.seqNo + " " + buf.offset + " " + buf.size);
 		// out.writeObject(buf.buffer);
 		//dataOutput.write(buf.buffer, 0, buf.size);
 	}

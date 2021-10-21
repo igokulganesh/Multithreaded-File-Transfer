@@ -5,7 +5,7 @@ import java.util.concurrent.locks.*;
 public class WriteManager
 {
 	private final Lock rmlock = new ReentrantLock(); 
-	private final int READ_SIZE = 10 ;
+	private final int READ_SIZE = FileTransfer.BUFFER_SIZE ;
 
 	ArrayList<Writer> writers = new ArrayList<Writer>(); // Thread 
 	ArrayList<String> fileNames  = new ArrayList<String>(); // filenames 
@@ -26,7 +26,6 @@ public class WriteManager
 
 	WriteManager(String mode, String ip, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
 	{
-
 		this.mode = mode ; 
 		this.serverName = ip ; 
 		this.port = Integer.parseInt(port);

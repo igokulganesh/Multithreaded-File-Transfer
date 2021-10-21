@@ -41,7 +41,8 @@ class Writer extends Thread
 					break ;
 				}
 				
-				writeManager.putBuffer(buf);
+				buf = null;
+				writeManager.putBuffer(new Buffer());
 				buf = writeManager.getNextBuffer();
 			}
 			catch(Exception e)
