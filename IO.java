@@ -67,12 +67,12 @@ class SocketIO extends IO
 		try
 		{
 			socket = new Socket(serverName, port);
-			System.out.println("Sender started on port "+ socket.getLocalPort()+".....");
-			System.out.println("Connected to server "+ socket.getRemoteSocketAddress());
+			Logger.Debug("Sender started on port "+ socket.getLocalPort()+".....");
+			Logger.Debug("Connected to server "+ socket.getRemoteSocketAddress());
 		}
 		catch(IOException e)
 		{
-			System.out.println("Error : " + e.getMessage() );
+			Logger.Print("Error : " + e.getMessage() );
 			e.printStackTrace();
 		}
 	}
@@ -82,14 +82,14 @@ class SocketIO extends IO
 		try
 		{
 			serverSocket = new ServerSocket(port);
-			System.out.println("Receiver started on port " + serverSocket.getLocalPort()+".....");
-	 		System.out.println("Waiting for Sender.....");
+			Logger.Debug("Receiver started on port " + serverSocket.getLocalPort()+".....");
+	 		Logger.Debug("Waiting for Sender.....");
 	 		socket = serverSocket.accept();
-	 		System.out.println(""+ socket.getRemoteSocketAddress() + " connected.....");
+	 		Logger.Debug(""+ socket.getRemoteSocketAddress() + " connected.....");
 		}
 		catch(IOException e)
 		{
-			System.out.println("Error : " + e.getMessage() );
+			Logger.Print("Error : " + e.getMessage() );
 			e.printStackTrace();
 		}
 	}
@@ -120,14 +120,14 @@ class SocketIO extends IO
 			if(serverSocket != null)
 			{
 				serverSocket.close(); 
-				System.out.println("Server Closed...");  
+				Logger.Debug("Server Closed...");  
 			}
-			System.out.println("Server Disconnected...");  
+			Logger.Debug("Server Disconnected...");  
 		}
 		catch(IOException e)
 		{
-			System.out.println("Server not closed properly"); 
-			System.out.println("Error : " + e.getMessage() );
+			Logger.Print("Server not closed properly"); 
+			Logger.Print("Error : " + e.getMessage() );
 			e.printStackTrace();
 		}  
 	}

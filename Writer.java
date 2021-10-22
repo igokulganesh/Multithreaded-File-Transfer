@@ -13,7 +13,7 @@ class Writer extends Thread
 	@Override 
 	public void run() 
 	{
-		System.out.println("Writer Thread started");
+		Logger.Debug("Writer Thread started");
 
 		Buffer buf = writeManager.getNextBuffer();
 		while(buf != null)
@@ -58,23 +58,15 @@ class Writer extends Thread
 			}
 			catch(Exception e)
 			{
-				System.out.println("write Error");
+				Logger.Print("write Error");
 				e.printStackTrace();
 				break ; 
-			}
-			
-			
+			}		
 		}
 
-		System.out.println("Writer Thread completed");
+		Logger.Debug("Writer Thread completed");
 	}
 }
 
 // Input -> FIleINput, StreamINput [open, close, read]
 // Output -> FileOutput, streamOutput [open, close, write]
-
-
-
-
-// 
-

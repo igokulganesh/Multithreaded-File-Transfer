@@ -3,12 +3,14 @@ public class FileTransfer
 	// Receiver = -R PORT TargetFile
 	// Sender = -S IP PORT SourceFile
 
-	static final int MAX_BUFFERS = 10 ; 
+	static final int MAX_BUFFERS = 20 ; 
 	static final int BUFFER_SIZE = 1024 * 16; 
-	static int THREAD_COUNT = 5 ;  
+	static int THREAD_COUNT = 1 ; 
 
 	public static void main(String[] args)
-	{
+	{	
+		Logger.DEBUG = false ; 
+
 		BufferQueue freeQueue = new BufferQueue(100, false);
 		BufferQueue writeQueue = new BufferQueue(100, true);
 
@@ -37,14 +39,12 @@ public class FileTransfer
 		}
 		else
 		{
-			System.out.println("Invalid Input Arguments!");
-			System.out.println("Expected Arguments list:");
-			System.out.println("For Receiver = -R PORT TargetFile");
-			System.out.println("For Sender = -S IP PORT SourceFile");
+			Logger.Print("Invalid Input Arguments!");
+			Logger.Print("Expected Arguments list:");
+			Logger.Print("For Receiver = -R PORT TargetFile");
+			Logger.Print("For Sender = -S IP PORT SourceFile");
 			return ;
 		}
-		
-		
 
 		rm.start(); 
 		wm.start(); 
@@ -52,6 +52,6 @@ public class FileTransfer
 		rm.join();
 		wm.join(); 
 
-		System.out.println("File Transfer Completed Successfully!");
+		Logger.Print("File Transfer Completed Successfully!");
 	}
 }

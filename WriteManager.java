@@ -82,7 +82,7 @@ public class WriteManager
 		}
 		else
 		{
-			System.out.println("Invalid Input");
+			Logger.Print("Invalid Input");
 			System.exit(0);
 		}
 		return file;

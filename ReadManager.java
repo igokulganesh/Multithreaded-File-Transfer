@@ -22,6 +22,8 @@ public class ReadManager
 
 	int port ;
 	String mode ;
+	
+	long startTime ; 
 
 	ReadManager(String mode, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
 	{
@@ -63,7 +65,10 @@ public class ReadManager
 			{
 				File file = new File(fileNames.get(currentIndex));
 				size = READ_SIZE;
-				remainingBytes = (int)file.length();		
+				remainingBytes = (int)file.length();	
+				Logger.Print("File Name : " + fileNames.get(currentIndex));
+				Logger.Print("File Size : " + (remainingBytes / ( 1024 * 1024)) + "MB" );
+				startTime = System.nanoTime();
 			}
 		}
 
@@ -76,9 +81,15 @@ public class ReadManager
 		remainingBytes -= size ;
 		
 		if (remainingBytes == 0)
+		{
+			long endTime = System.nanoTime(); 
+		 	double elapsedTime = (double)(endTime - startTime)/1000000000 ; 
+			Logger.Print("Time Taken : " + elapsedTime + " Seconds");
 			offset = 0;
+		}
 		
-		System.out.println("Remaining : " + remainingBytes);
+		
+		Logger.Debug("Remaining : " + remainingBytes);
 		rmlock.unlock();
 		return buf ;
 	}	
@@ -102,7 +113,7 @@ public class ReadManager
 		}
 		else
 		{
-			System.out.println("Invalid Input");
+			Logger.Print("Invalid Input");
 			System.exit(0);
 		}
 		return file;

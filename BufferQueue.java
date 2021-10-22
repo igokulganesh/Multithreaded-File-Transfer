@@ -73,7 +73,7 @@ public class BufferQueue
 		} 
 		catch(InterruptedException e)
 		{
-			System.out.println("UnknownError");
+			Logger.Print("UnknownError");
 			return new Buffer() ;
 		}
 		finally 

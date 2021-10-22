@@ -13,7 +13,7 @@ public class Reader extends Thread
 	@Override 
 	public void run() 
 	{
-		System.out.println("Reader Thread started");
+		Logger.Debug("Reader Thread started");
 		Buffer buf = readManger.getNextBuffer();
 		while(true)
 		{
@@ -71,12 +71,12 @@ public class Reader extends Thread
 			}
 			catch (Exception e)
 			{
-				System.out.println("READER Error");
+				Logger.Print("READER Error");
 				e.printStackTrace();
 				break ; 
 			}
 		}
 
-		System.out.println("Reader Thread completed");
+		Logger.Debug("Reader Thread completed");
 	}
 }
