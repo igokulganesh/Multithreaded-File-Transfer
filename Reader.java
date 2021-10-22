@@ -62,6 +62,7 @@ public class Reader extends Thread
 						// file.write(buf);
 						//file.flush();
 						file.close();
+						buf = readManger.getNextBuffer();
 					}
 				
 					break ; 

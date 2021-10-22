@@ -19,8 +19,7 @@ class FileIO extends IO
 { 
 	RandomAccessFile file = null ; 
 
-	FileIO()
-	{}
+	FileIO(){}
 
 	// mode would be "r" or "rw" 
 	void open(String fname, String mode) throws IOException
@@ -40,7 +39,6 @@ class FileIO extends IO
 		return file.read(buf.buffer, 0, buf.size); 
 	}
 
-	
 	void write(Buffer buf) throws IOException
 	{
 		file.seek(buf.offset);
@@ -51,12 +49,11 @@ class FileIO extends IO
 class SocketIO extends IO
 {
 	private ServerSocket serverSocket = null ; // create a server
-	private Socket socket = null ; 
-	private DataOutputStream dataOutput = null ;  
+	private Socket socket = null ;
+	private DataOutputStream dataOutput = null ;
 	private DataInputStream dataInput = null ;
-	private ObjectInputStream in = null ; 
-	private ObjectOutputStream out = null ; 
-
+	private ObjectInputStream in = null ;
+	private ObjectOutputStream out = null ;
 
 	private int port ;  
 
@@ -72,13 +69,6 @@ class SocketIO extends IO
 			socket = new Socket(serverName, port);
 			System.out.println("Sender started on port "+ socket.getLocalPort()+".....");
 			System.out.println("Connected to server "+ socket.getRemoteSocketAddress());
-			
-			dataOutput = new DataOutputStream(socket.getOutputStream());
-			dataInput = new DataInputStream(socket.getInputStream());  
-
-			out = new ObjectOutputStream(dataOutput);
-			in = new ObjectInputStream(dataInput);
-
 		}
 		catch(IOException e)
 		{
@@ -96,12 +86,6 @@ class SocketIO extends IO
 	 		System.out.println("Waiting for Sender.....");
 	 		socket = serverSocket.accept();
 	 		System.out.println(""+ socket.getRemoteSocketAddress() + " connected.....");
-
-	 		dataOutput = new DataOutputStream(socket.getOutputStream());
-			dataInput = new DataInputStream(socket.getInputStream());  
-
-			out = new ObjectOutputStream(dataOutput);
-			in = new ObjectInputStream(dataInput);
 		}
 		catch(IOException e)
 		{
@@ -113,13 +97,16 @@ class SocketIO extends IO
 	void open(String ip, String mode) throws IOException
 	{
 		if(mode.equals("SENDER"))
-		{
 			OpenSender(ip);
-		}
 		else if(mode.equals("RECIEVER"))
-		{
 			OpenReceiver();
-		}
+
+		dataOutput = new DataOutputStream(socket.getOutputStream());
+		dataInput = new DataInputStream(socket.getInputStream());  
+
+		out = new ObjectOutputStream(dataOutput);
+		in = new ObjectInputStream(dataInput);
+
 		return ; 
 	}
 

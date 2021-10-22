@@ -1,23 +1,16 @@
 public class Buffer implements java.io.Serializable
 {
 	private static final long serialVersionUID = 987654321;
+	static final int BUFFER_SIZE = FileTransfer.BUFFER_SIZE ; 
 
 	public enum MsgType { INVALID, DATA, FILEOPEN, FILECLOSE, END };   
 
-	static int BUFFER_SIZE = 1024 * 16 ; 
-	
-	int fileIndex;
+	int fileIndex ;
 	int offset ;
 	int size ;
 	int seqNo ;
-	MsgType type; // 1 - data, 2 - new file open, 3 - close the file 
+	MsgType type; 
 	byte buffer[] ;	
-	
-	protected void finalize() throws Throwable  
-	{
-		this.buffer = null ; 
-	//	System.out.println("GC : " + this.seqNo);
-	}
 		
 	public Buffer()
 	{
@@ -45,6 +38,12 @@ public class Buffer implements java.io.Serializable
 		}
 	}
 
+	protected void finalize() throws Throwable  
+	{
+		this.buffer = null ; 
+		//System.out.println("GC : " + this.seqNo);
+	}
+
 /*	private void writeObject(ObjectOutputStream out) throws IOException 
 	{	
 
@@ -52,6 +51,10 @@ public class Buffer implements java.io.Serializable
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException 
 	{
-
+		offset = out.readInt() ;
+		size = out.readInt() ;
+		seqNo = out.readInt() ;
+		type = out. ; 
+		fileIndex = ind;
 	}*/
 }

@@ -47,6 +47,8 @@ class Writer extends Thread
 						file.write(buf);
 						file.close();
 					}
+					buf.seqNo++;
+					writeManager.input.push(buf);
 					break ;
 				}
 				
