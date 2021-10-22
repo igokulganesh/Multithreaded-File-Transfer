@@ -54,6 +54,7 @@ class Writer extends Thread
 				
 				buf = null;
 				writeManager.putBuffer(new Buffer());
+				//writeManager.putBuffer(buf);
 				buf = writeManager.getNextBuffer();
 			}
 			catch(Exception e)
