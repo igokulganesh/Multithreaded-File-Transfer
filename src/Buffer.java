@@ -1,6 +1,6 @@
 public class Buffer implements java.io.Serializable
 {
-	private static final long serialVersionUID = 987654321;
+	private static final long serialVersionUID = 987654321 ;
 	static final int BUFFER_SIZE = FileTransfer.BUFFER_SIZE ; 
 
 	public enum MsgType { INVALID, DATA, FILEOPEN, FILECLOSE, END };   

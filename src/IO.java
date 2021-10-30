@@ -67,8 +67,8 @@ class SocketIO extends IO
 		try
 		{
 			socket = new Socket(serverName, port);
-			Logger.Debug("Sender started on port "+ socket.getLocalPort()+".....");
-			Logger.Debug("Connected to server "+ socket.getRemoteSocketAddress());
+			Logger.Print("Sender started on port "+ socket.getLocalPort()+".....");
+			Logger.Print("Connected to server "+ socket.getRemoteSocketAddress());
 		}
 		catch(IOException e)
 		{
@@ -82,10 +82,10 @@ class SocketIO extends IO
 		try
 		{
 			serverSocket = new ServerSocket(port);
-			Logger.Debug("Receiver started on port " + serverSocket.getLocalPort()+".....");
-	 		Logger.Debug("Waiting for Sender.....");
+			Logger.Print("Receiver started on port " + serverSocket.getLocalPort()+".....");
+	 		Logger.Print("Waiting for Sender.....");
 	 		socket = serverSocket.accept();
-	 		Logger.Debug(""+ socket.getRemoteSocketAddress() + " connected.....");
+	 		Logger.Print(""+ socket.getRemoteSocketAddress() + " connected.....");
 		}
 		catch(IOException e)
 		{
