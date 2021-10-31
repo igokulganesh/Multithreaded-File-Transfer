@@ -5,14 +5,14 @@ public class FileTransfer
 
 	static final int MAX_BUFFERS = 20 ; 
 	static final int BUFFER_SIZE = 1024 * 16; 
-	static int THREAD_COUNT = 1 ; 
+	static int THREAD_COUNT = 3 ; 
 
 	public static void main(String[] args)
 	{	
 		Logger.DEBUG = false ; 
 
 		BufferQueue freeQueue = new BufferQueue(100, false);
-		BufferQueue writeQueue = new BufferQueue(100, true);
+		BufferQueue writeQueue = new BufferQueue(100, false);
 
 		ReadManager rm = null ; // 1 = mode , 2 = port, 3 = filename, 4 = thread count  
 		WriteManager wm = null ; // 1 = mode, 2 = ReceiverIPaddress, 3 = port, 4 = thread count   
