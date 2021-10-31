@@ -12,4 +12,12 @@ public class Logger
 		if(DEBUG == true)
 			System.out.println(val); 
 	}
+	
+	static void Debug(Exception e)
+	{
+		if(DEBUG == true)
+			e.printStackTrace();
+		else
+			Print("Unknown Error");
+	}
 }

@@ -4,15 +4,16 @@ public class FileTransfer
 	// Sender = -S IP PORT SourceFile
 
 	static final int MAX_BUFFERS = 20 ; 
-	static final int BUFFER_SIZE = 1024 * 16; 
-	static int THREAD_COUNT = 3 ; 
+	static final int BUFFER_SIZE = 1024 * 1024 * 32 ; 
+	static int THREAD_COUNT = 20 ; 
 
 	public static void main(String[] args)
 	{	
 		Logger.DEBUG = false ; 
-
-		BufferQueue freeQueue = new BufferQueue(100, false);
-		BufferQueue writeQueue = new BufferQueue(100, false);
+		Logger.Debug("Threads : " + THREAD_COUNT);
+		
+		BufferQueue freeQueue = new BufferQueue();
+		BufferQueue writeQueue = new BufferQueue();
 
 		ReadManager rm = null ; // 1 = mode , 2 = port, 3 = filename, 4 = thread count  
 		WriteManager wm = null ; // 1 = mode, 2 = ReceiverIPaddress, 3 = port, 4 = thread count   

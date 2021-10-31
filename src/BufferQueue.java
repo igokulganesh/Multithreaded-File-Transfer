@@ -3,53 +3,19 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class BufferComparator implements Comparator<Buffer>
-{
-	public int compare(Buffer b1, Buffer b2) 
-	{
-		if (b1.seqNo > b2.seqNo)
-    		return 1;
-		else if ( b1.seqNo < b2.seqNo )
-    		return -1;
-		return 0;
-	}
-}
-
 public class BufferQueue
 {
-	static int MAX_BUFFERS = 20; // 1024 * 1024 * 16
-	PriorityQueue<Buffer> pq ;
-	long prev ;
-	boolean isSerialize ;
-
- 
+	private	Queue<Buffer> que = new LinkedList<>();
 	private final Lock aLock = new ReentrantLock(); 
 	private final Condition bufferEmpty = aLock.newCondition();
 
-	BufferQueue(int capacity, boolean flag)
-	{ 
-		this.pq = new PriorityQueue<Buffer>(capacity, new BufferComparator()); 
-		this.prev = 0 ;
-		this.isSerialize = flag ; 
-	}
-
-	BufferQueue()
-	{
-		this(100, true); 
-	}
 
 	void push(Buffer val) 
 	{
 		aLock.lock();
-		try
-		{
-			if(pq.add(val))
-				bufferEmpty.signalAll(); 
-		}
-		finally 
-		{ 
-			aLock.unlock(); 
-		}
+		que.add(val);
+		bufferEmpty.signalAll(); 
+		aLock.unlock(); 
 	}
 
 	Buffer pop() 
@@ -57,24 +23,14 @@ public class BufferQueue
 		aLock.lock(); 
 		try
 		{
-			if(!isSerialize)
-			{
-				while(pq.isEmpty())
-					bufferEmpty.await(); 
-				return pq.poll(); 
-			}
-			
-			while(pq.isEmpty() || prev != pq.peek().seqNo)
+			while(que.isEmpty())
 				bufferEmpty.await(); 
-
-			Buffer top = pq.poll() ;
-			prev++ ; 
-			return top ;  
+			return que.poll(); 
 		} 
 		catch(InterruptedException e)
 		{
-			Logger.Print("UnknownError");
-			return new Buffer() ;
+			Logger.Debug(e);
+			return null ;
 		}
 		finally 
 		{ 
@@ -84,11 +40,11 @@ public class BufferQueue
 
 	Buffer top()
 	{
-		return pq.peek();
+		return que.peek();
 	}
 
 	boolean isEmpty()
 	{
-		return pq.isEmpty();
+		return que.isEmpty();
 	}
 }
