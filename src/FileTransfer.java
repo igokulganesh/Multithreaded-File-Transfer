@@ -1,15 +1,18 @@
+import java.util.* ; 
+
 public class FileTransfer
 {
-	// Receiver = -R PORT TargetFile
-	// Sender = -S IP PORT SourceFile
+	// Receiver = -R PORT TargetFiles
+	// Sender = -S IP PORT SourceFiles
+	public enum Type { INVALID, SOCKET, FILE, };  
 
 	static final int MAX_BUFFERS = 20 ; 
 	static final int BUFFER_SIZE = 1024 * 1024 * 32 ; 
-	static int THREAD_COUNT = 20 ; 
+	static int THREAD_COUNT = 3 ; 
 
 	public static void main(String[] args)
-	{	
-		Logger.DEBUG = false ; 
+	{
+		Logger.DEBUG = true ; 
 		Logger.Debug("Threads : " + THREAD_COUNT);
 		
 		BufferQueue freeQueue = new BufferQueue();
@@ -23,20 +26,20 @@ public class FileTransfer
 			freeQueue.push(new Buffer());
 		}
 
-		if(args[0].equals("-R") && args.length == 3)
+		if(args[0].equals("-R") && args.length >= 3)
 		{
-			rm = new ReadManager("SOCKET", args[1], args[2] , 1, freeQueue, writeQueue); // reads from the Socket = RS
-			wm = new WriteManager("FILE", null, args[1], args[2], THREAD_COUNT, writeQueue, freeQueue); // writes to the File = WF
+			rm = new ReadManager(Type.SOCKET, args[1], Arrays.copyOfRange(args, 2, args.length), 1, freeQueue, writeQueue); // reads from the Socket = RS
+			wm = new WriteManager(Type.FILE, null, args[1], Arrays.copyOfRange(args, 2, args.length), THREAD_COUNT, writeQueue, freeQueue); // writes to the File = WF
 		}
-		else if(args[0].equals("-S") && args.length == 4)
+		else if(args[0].equals("-S") && args.length >= 4)
 		{	
-			rm = new ReadManager("FILE", args[2], args[3], THREAD_COUNT, freeQueue, writeQueue); // reads from the file = RF
-			wm = new WriteManager("SOCKET", args[1], args[2], args[3], 1, writeQueue, freeQueue); // writes to the Socket = WS
+			rm = new ReadManager(Type.FILE, args[2], Arrays.copyOfRange(args, 3, args.length), THREAD_COUNT, freeQueue, writeQueue); // reads from the file = RF
+			wm = new WriteManager(Type.SOCKET, args[1], args[2], Arrays.copyOfRange(args, 3, args.length), 1, writeQueue, freeQueue); // writes to the Socket = WS
 		}
 		else if(args[0].equals("-F"))
 		{	
-			rm = new ReadManager("FILE", "-1", args[1], THREAD_COUNT, freeQueue, writeQueue);
-			wm = new WriteManager("FILE", null, "-1", args[1], THREAD_COUNT, writeQueue, freeQueue); 
+			rm = new ReadManager(Type.FILE, "-1", Arrays.copyOfRange(args, 1, args.length), THREAD_COUNT, freeQueue, writeQueue);
+			wm = new WriteManager(Type.FILE, null, "-1", Arrays.copyOfRange(args, 1, args.length), THREAD_COUNT, writeQueue, freeQueue); 
 		}
 		else
 		{

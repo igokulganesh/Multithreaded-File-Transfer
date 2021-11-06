@@ -5,10 +5,10 @@ import java.util.concurrent.locks.*;
 public class ReadManager
 {
 	private final Lock rmlock = new ReentrantLock(); 
-	private final int READ_SIZE = FileTransfer.BUFFER_SIZE ;
+	private final int BUFFER_SIZE = FileTransfer.BUFFER_SIZE ;
 
-	ArrayList<Reader> readers = new ArrayList<Reader>();  ; // Thread 
-	ArrayList<String> fileNames = new ArrayList<String>(); // filenames 
+	ArrayList<Reader> readers = new ArrayList<Reader>();  // Thread 
+	String [] fileNames  ; //= new ArrayList<String>(); // filenames 
 
 	BufferQueue input;
 	BufferQueue output;
@@ -17,24 +17,25 @@ public class ReadManager
 	int offset;
 	int seqNo;
 	int size;
+	int fileSize; 
 	int threadCount;
 	int remainingBytes;
 
 	int port ;
-	String mode ;
+	FileTransfer.Type mode ;
 	
-	long startTime ; 
+	long startTime = 0; 
 
-	ReadManager(String mode, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
+	ReadManager(FileTransfer.Type mode, String port, String [] files, int thc, BufferQueue inp, BufferQueue out)
 	{
 
 		this.mode = mode ; 
 		this.port = Integer.parseInt(port);   
 
 		currentIndex = -1 ;
-		fileNames.add(fname); 
+		fileNames = files ; 
 		offset = 0 ; 
-		size = READ_SIZE ; 
+		size = BUFFER_SIZE ; 
 		seqNo = 0;
 		threadCount = thc ; 
 
@@ -47,15 +48,27 @@ public class ReadManager
 		rmlock.lock();
 		Buffer buf = input.pop();
 
-		if (mode == "SOCKET")
+		if(mode == FileTransfer.Type.SOCKET) // Receiver 
 		{
 			rmlock.unlock();
 			return buf;
 		}
+		
+		// Sender
 		if(offset == 0)
 		{	
-			currentIndex++ ; 
-			if(currentIndex >= fileNames.size()) // All files Completed 
+			if(startTime != 0)
+			{
+				long endTime = System.nanoTime(); 
+		 		double elapsedTime = (double)(endTime - startTime)/1000000000 ; 
+				Logger.Print("Time Taken to Upload: " + elapsedTime + " Seconds");
+				double speed = fileSize/elapsedTime ; 
+		 		Logger.Print("Upload Speed : " + speed  + " MBPS");
+		 		startTime = 0 ; 
+			}
+
+			currentIndex++ ;
+			if(currentIndex >= fileNames.length) // All files Completed 
 			{
 				buf.init("", Buffer.MsgType.END, seqNo++, currentIndex);
 				rmlock.unlock();
@@ -63,11 +76,18 @@ public class ReadManager
 			}
 			else // next files 
 			{
-				File file = new File(fileNames.get(currentIndex));
-				size = READ_SIZE;
+				File file = new File(fileNames[currentIndex]);
+				size = BUFFER_SIZE;
 				remainingBytes = (int)file.length();	
-				Logger.Print("File Name : " + fileNames.get(currentIndex));
-				Logger.Print("File Size : " + (remainingBytes / ( 1024 * 1024)) + "MB" );
+
+				// Send FileInfo here 
+
+
+
+				// Calculate the time 
+				fileSize = (remainingBytes / ( 1024 * 1024)) ; 
+				Logger.Print("File " + currentIndex+1 + " : " + fileNames[currentIndex]);
+				Logger.Print("File Size : " + fileSize + " MB" );
 				startTime = System.nanoTime();
 			}
 		}
@@ -81,15 +101,10 @@ public class ReadManager
 		remainingBytes -= size ;
 		
 		if (remainingBytes == 0)
-		{
-			long endTime = System.nanoTime(); 
-		 	double elapsedTime = (double)(endTime - startTime)/1000000000 ; 
-			Logger.Print("Time Taken : " + elapsedTime + " Seconds");
 			offset = 0;
-		}
 		
+		// Logger.Debug("Remaining : " + remainingBytes);
 		
-		Logger.Debug("Remaining : " + remainingBytes);
 		rmlock.unlock();
 		return buf ;
 	}	
@@ -98,15 +113,15 @@ public class ReadManager
 	{
 		IO file = null ; 
 
-		if(index >= fileNames.size())
+		if(index >= fileNames.length)
 			return file;
 		
-		if(mode.equals("FILE"))
+		if(mode == FileTransfer.Type.FILE)
 		{	
 			file = new FileIO();
-			file.open(fileNames.get(index), "r");
+			file.open(fileNames[index], "r");
 		}
-		else if(mode.equals("SOCKET"))
+		else if(mode == FileTransfer.Type.SOCKET)
 		{
 			file = new SocketIO(port); 
 			file.open(null, "RECIEVER"); 
@@ -130,8 +145,8 @@ public class ReadManager
 		for(int i = 0 ; i < threadCount ; i++)
 		{
 			r = new Reader(this); 
-			readers.add(r); 
 			r.start();
+			readers.add(r); 
 		}
 	}
 
@@ -145,7 +160,7 @@ public class ReadManager
 			} 
 			catch (InterruptedException e) 
 			{
-				e.printStackTrace();
+				Logger.Debug(e);
 			} 
 		}
 	}

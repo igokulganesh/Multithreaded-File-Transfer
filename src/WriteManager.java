@@ -8,7 +8,7 @@ public class WriteManager
 	private final int READ_SIZE = FileTransfer.BUFFER_SIZE ;
 
 	ArrayList<Writer> writers = new ArrayList<Writer>(); // Thread 
-	ArrayList<String> fileNames  = new ArrayList<String>(); // filenames 
+	String []fileNames ; //  = new ArrayList<String>(); // filenames 
 
 	BufferQueue input;
 	BufferQueue output;
@@ -22,16 +22,16 @@ public class WriteManager
 
 	String serverName = null; 
 	int port ;
-	String mode = null ;
+	FileTransfer.Type mode = FileTransfer.Type.INVALID;
 
-	WriteManager(String mode, String ip, String port, String fname, int thc, BufferQueue inp, BufferQueue out)
+	WriteManager(FileTransfer.Type mode, String ip, String port, String [] files, int thc, BufferQueue inp, BufferQueue out)
 	{
 		this.mode = mode ; 
 		this.serverName = ip ; 
 		this.port = Integer.parseInt(port);
 
 		currentIndex = 0 ;
-		fileNames.add(fname); 
+		fileNames = files ; 
 		offset = -1 ; 
 		size = READ_SIZE ; 
 		seqNo = 0;
@@ -67,15 +67,15 @@ public class WriteManager
 	{
 		IO file = null ; 
 
-		if(index >= fileNames.size())
+		if(index >= fileNames.length)
 			return file;
 				
-		if(mode.equals("FILE"))
+		if(mode == FileTransfer.Type.FILE)
 		{	
 			file = new FileIO();
-			file.open(fileNames.get(currentIndex), "rw");
+			file.open(fileNames[currentIndex], "rw");
 		}
-		else if(mode.equals("SOCKET"))
+		else if(mode == FileTransfer.Type.SOCKET)
 		{
 			file = new SocketIO(port); 
 			file.open(serverName, "SENDER");

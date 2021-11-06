@@ -73,7 +73,7 @@ class SocketIO extends IO
 		catch(IOException e)
 		{
 			Logger.Print("Error : " + e.getMessage() );
-			e.printStackTrace();
+			Logger.Debug(e);
 		}
 	}
 
@@ -90,7 +90,7 @@ class SocketIO extends IO
 		catch(IOException e)
 		{
 			Logger.Print("Error : " + e.getMessage() );
-			e.printStackTrace();
+			Logger.Debug(e);
 		}
 	}
 
@@ -128,7 +128,7 @@ class SocketIO extends IO
 		{
 			Logger.Print("Server not closed properly"); 
 			Logger.Print("Error : " + e.getMessage() );
-			e.printStackTrace();
+			Logger.Debug(e);
 		}  
 	}
 
@@ -147,12 +147,9 @@ class SocketIO extends IO
 		//	out.write(data.seqNo);
 		//	out.flush();
 		} 
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			throw e;
+		catch (ClassNotFoundException e) 
+		{
+			Logger.Debug(e);
 		}
 
 		//System.out.println("Read From the stream");

@@ -18,13 +18,13 @@ public class Buffer implements java.io.Serializable
 		buffer = new byte[BUFFER_SIZE] ;
 	}
 
-	public void init(int off, int sz, int sno, int ind) 
+	public void init(int off, int sz, int sno, int ind)
 	{
-		offset = off;
-		size = sz;
+		offset = off ;
+		size = sz ;
 		seqNo = sno ;
 		type = MsgType.DATA ; 
-		fileIndex = ind;
+		fileIndex = ind ;
 	}
 
 	public void init(String data, MsgType msg, int sno, int ind)
@@ -33,9 +33,7 @@ public class Buffer implements java.io.Serializable
 		seqNo = sno ;
 		fileIndex = ind;
 		if(type == MsgType.FILEOPEN)
-		{
-			System.arraycopy(data.getBytes(), 0, buffer, 0, data.length()); 
-		}
+			System.arraycopy(data.getBytes(), 0, buffer, 0, data.length()); // sending file name 
 	}
 
 	protected void finalize() throws Throwable  

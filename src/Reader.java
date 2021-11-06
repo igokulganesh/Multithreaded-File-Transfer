@@ -3,6 +3,7 @@ public class Reader extends Thread
 	ReadManager readManger ; 
 	IO file ;
 	int fileIndex;
+
     Reader (ReadManager rm)
 	{
 		file = null;
@@ -15,6 +16,7 @@ public class Reader extends Thread
 	{
 		Logger.Debug("Reader Thread started");
 		Buffer buf = readManger.getNextBuffer();
+		
 		while(true)
 		{
 			try
@@ -22,7 +24,7 @@ public class Reader extends Thread
 				if(buf.fileIndex != fileIndex)
 				{
 					fileIndex = buf.fileIndex;
-					if (readManger.mode.equals("SOCKET"))
+					if (readManger.mode == FileTransfer.Type.SOCKET)
 					{
 						if (file != null)
 							file.close();
@@ -33,14 +35,8 @@ public class Reader extends Thread
 						file = readManger.CreateIO(fileIndex);
 					}
 				}
-				/*
-				if(buf.type == Buffer.MsgType.FILECLOSE)
-				{
-					file.close();
-					file = null;
-				}
-				else*/
-				if (readManger.mode.equals("SOCKET"))
+
+				if (readManger.mode == FileTransfer.Type.SOCKET)
 				{
 					file.read(buf);
 				}
@@ -56,7 +52,7 @@ public class Reader extends Thread
 					
 				if(buf.type == Buffer.MsgType.END)
 				{
-					if(readManger.mode.equals("SOCKET"))
+					if(readManger.mode == FileTransfer.Type.SOCKET)
 					{
 						// Send the Last Acknowledgement to Sender
 						// file.write(buf);
@@ -72,7 +68,7 @@ public class Reader extends Thread
 			catch (Exception e)
 			{
 				Logger.Print("READER Error");
-				e.printStackTrace();
+				Logger.Debug(e);
 				break ; 
 			}
 		}
