@@ -1,2 +1,2 @@
 # Multithreaded-File-Transfer
-multithreaded file transfer 
+Multithreaded file transfer protocol is a technique that uses multiple threads to copy files from one location to another. This can significantly improve the speed of file transfer, especially for large files. Each thread can be responsible for copying a different part of the file. This allows the file to be copied in parallel, which can significantly reduce the overall time it takes to complete the transfer.
