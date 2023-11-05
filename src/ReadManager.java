@@ -114,7 +114,7 @@ public class ReadManager
 		IO file = null ; 
 
 		if(index >= fileNames.length)
-			return file;
+			return null;
 		
 		if(mode == FileTransfer.Type.FILE)
 		{	

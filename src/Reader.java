@@ -17,24 +17,21 @@ public class Reader extends Thread
 		Logger.Debug("Reader Thread started");
 		Buffer buf = readManger.getNextBuffer();
 		
-		while(true)
+		while(buf != null)
 		{
 			try
 			{
 				if(buf.fileIndex != fileIndex)
 				{
 					fileIndex = buf.fileIndex;
-					if (readManger.mode == FileTransfer.Type.SOCKET)
-					{
-						if (file != null)
-							file.close();
-						file = readManger.CreateIO(fileIndex);
-					}
-					else if (file == null)
+					if (file == null)
 					{
 						file = readManger.CreateIO(fileIndex);
 					}
 				}
+
+				if(file == null)
+					break ; 
 
 				if (readManger.mode == FileTransfer.Type.SOCKET)
 				{

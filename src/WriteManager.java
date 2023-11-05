@@ -45,18 +45,10 @@ public class WriteManager
 	{
 		rmlock.lock();
 		Buffer buf = input.pop();
-/*
-		if (buf.type == Buffer.MsgType.FILEOPEN)
-		{
-			buf.init(fileNames[currentIndex], Buffer.MsgType.FILEOPEN, buf.seqNo, currentIndex);
-			currentIndex++;
-		}
-*/	
+
 		if(buf.type == Buffer.MsgType.END)
 		{
 			transferCompleted = 0;
-			//output.push(buf);
-			//buf = null;
 		}
 		rmlock.unlock();
 
@@ -68,7 +60,7 @@ public class WriteManager
 		IO file = null ; 
 
 		if(index >= fileNames.length)
-			return file;
+			return null;
 				
 		if(mode == FileTransfer.Type.FILE)
 		{	

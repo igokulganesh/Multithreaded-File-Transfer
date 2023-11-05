@@ -1,9 +1,10 @@
 class Writer extends Thread 
 {
 	WriteManager writeManager;
-	IO file ; 
+	IO file;
 	int fileIndex;
-    Writer (WriteManager wm)
+
+    Writer(WriteManager wm)
 	{
 		file = null;
 		writeManager = wm ;
@@ -14,8 +15,8 @@ class Writer extends Thread
 	public void run() 
 	{
 		Logger.Debug("Writer Thread started");
-
 		Buffer buf = writeManager.getNextBuffer();
+		
 		while(buf != null)
 		{
 			try
@@ -23,29 +24,24 @@ class Writer extends Thread
 				if(buf.fileIndex != fileIndex)
 				{
 					fileIndex = buf.fileIndex;
-					if (!writeManager.mode.equals("SOCKET"))
-					{
-						if (file != null)
-							file.close();					
-						file = writeManager.CreateIO(fileIndex);
-					}
-					else if (file == null)
+					if(file == null)
 					{
 						file = writeManager.CreateIO(fileIndex);
 					}
 				}
+
+				if(file == null)
+					break ; 
 				
-				if (buf.type == Buffer.MsgType.DATA)
+				if(buf.type == Buffer.MsgType.DATA)
 					file.write(buf);
 				
-				if (buf.type == Buffer.MsgType.END)
-				{
-					
+				if(buf.type == Buffer.MsgType.END)
+				{	
 					if (writeManager.mode.equals("SOCKET"))
 					{
-						// file.flush();
 						file.write(buf);
-						file.close();
+						//file.close();
 					}
 					buf.seqNo++;
 					writeManager.input.push(buf);

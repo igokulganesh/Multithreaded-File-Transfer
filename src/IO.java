@@ -36,13 +36,13 @@ class FileIO extends IO
 	int read(Buffer buf) throws IOException
 	{
 		file.seek(buf.offset);
-		return file.read(buf.buffer, 0, buf.size); 
+		return file.read(buf.buffer, 0, buf.size);
 	}
 
 	void write(Buffer buf) throws IOException
 	{
 		file.seek(buf.offset);
-		file.write(buf.buffer, 0, buf.size); 
+		file.write(buf.buffer, 0, buf.size);
 	}
 }
 
